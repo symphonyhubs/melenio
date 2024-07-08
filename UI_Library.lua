@@ -1,4 +1,11 @@
 local UI_Library = {}
+UI_Library.__index = UI_Library
+
+function UI_Library.new()
+    local self = setmetatable({}, UI_Library)
+    self.tabs = {}
+    return self
+end
 
 -- Function to create a new ScreenGui
 function UI_Library:CreateScreenGui(name)
@@ -56,27 +63,58 @@ end
 function UI_Library:CreateWindow(title)
     local screenGui = self:CreateScreenGui("WindowGUI")
 
-    local windowFrame = self:CreateFrame(screenGui, UDim2.new(0, 400, 0, 300), UDim2.new(0.3, 0, 0.3, 0), Color3.fromRGB(4, 4, 4))
+    local windowFrame = self:CreateFrame(screenGui, UDim2.new(0, 600, 0, 400), UDim2.new(0.2, 0, 0.2, 0), Color3.fromRGB(4, 4, 4))
 
-    local titleLabel = self:CreateTextLabel(windowFrame, UDim2.new(0, 400, 0, 50), UDim2.new(0, 0, 0, 0), title, Enum.Font.PermanentMarker, Color3.fromRGB(255, 255, 255), 18)
+    local titleLabel = self:CreateTextLabel(windowFrame, UDim2.new(0, 600, 0, 50), UDim2.new(0, 0, 0, 0), title, Enum.Font.PermanentMarker, Color3.fromRGB(255, 255, 255), 18)
 
     local closeButton = self:CreateButton(windowFrame, UDim2.new(0, 50, 0, 50), UDim2.new(0.9, 0, 0, 0), "X", Enum.Font.PermanentMarker, Color3.fromRGB(255, 0, 0), 18)
     closeButton.MouseButton1Click:Connect(function()
         screenGui:Destroy()
     end)
 
+    self.windowFrame = windowFrame
+
+    -- Create Tab Holder
+    local tabHolder = Instance.new("Frame")
+    tabHolder.Size = UDim2.new(1, 0, 1, -50)
+    tabHolder.Position = UDim2.new(0, 0, 0, 50)
+    tabHolder.BackgroundTransparency = 1
+    tabHolder.Parent = windowFrame
+    self.tabHolder = tabHolder
+
     return windowFrame
+end
+
+-- Function to create a tab
+function UI_Library:CreateTab(tabName)
+    local tabButton = self:CreateButton(self.windowFrame, UDim2.new(0, 100, 0, 50), UDim2.new(0, #self.tabs * 100, 0, 0), tabName, Enum.Font.PermanentMarker, Color3.fromRGB(0, 0, 0), 14)
+    tabButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    local tabFrame = self:CreateFrame(self.tabHolder, UDim2.new(1, 0, 1, -50), UDim2.new(0, 0, 0, 0), Color3.fromRGB(4, 4, 4))
+    tabFrame.Visible = false
+
+    tabButton.MouseButton1Click:Connect(function()
+        for _, tab in pairs(self.tabs) do
+            tab.frame.Visible = false
+        end
+        tabFrame.Visible = true
+    end)
+
+    table.insert(self.tabs, {button = tabButton, frame = tabFrame})
+    return tabFrame
+end
+
+-- Function to create a section
+function UI_Library:CreateSection(parent, sectionName)
+    local sectionFrame = self:CreateFrame(parent, UDim2.new(1, 0, 0, 100), UDim2.new(0, 0, 0, 0), Color3.fromRGB(6, 6, 6))
+    local sectionLabel = self:CreateTextLabel(sectionFrame, UDim2.new(1, 0, 0, 20), UDim2.new(0, 0, 0, 0), sectionName, Enum.Font.PermanentMarker, Color3.fromRGB(255, 255, 255), 14)
+    sectionLabel.TextXAlignment = Enum.TextXAlignment.Left
+    sectionLabel.Position = UDim2.new(0, 10, 0, 0)
+    return sectionFrame
 end
 
 -- Function to initialize the default UI
 function UI_Library:Init()
-    local screenGui = self:CreateScreenGui("UI")
-
-    local mainFrame = self:CreateFrame(screenGui, UDim2.new(0, 529, 0, 317), UDim2.new(0.221, 0, 0.177, 0), Color3.fromRGB(4, 4, 4))
-    
-    local title = self:CreateTextLabel(mainFrame, UDim2.new(0, 366, 0, 43), UDim2.new(0.169, 0, 0.027, 0), "Milenio X Hub [BETA]", Enum.Font.PermanentMarker, Color3.fromRGB(254, 254, 254), 14)
-    
-    local mainButton = self:CreateButton(mainFrame, UDim2.new(0, 100, 0, 40), UDim2.new(0.059, 0, 0.006, 0), "Main", Enum.Font.PermanentMarker, Color3.fromRGB(0, 0, 0), 14)
+    self:CreateWindow("Milenio X Hub")
 end
 
 return UI_Library
