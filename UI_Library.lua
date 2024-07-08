@@ -1,4 +1,3 @@
--- UI_Library.lua
 local UI_Library = {}
 
 -- Function to create a new ScreenGui
@@ -51,6 +50,22 @@ function UI_Library:CreateButton(parent, size, position, text, font, textColor, 
     Button.TextSize = textSize
     Button.Parent = parent
     return Button
+end
+
+-- Function to create a window
+function UI_Library:CreateWindow(title)
+    local screenGui = self:CreateScreenGui("WindowGUI")
+
+    local windowFrame = self:CreateFrame(screenGui, UDim2.new(0, 400, 0, 300), UDim2.new(0.3, 0, 0.3, 0), Color3.fromRGB(4, 4, 4))
+
+    local titleLabel = self:CreateTextLabel(windowFrame, UDim2.new(0, 400, 0, 50), UDim2.new(0, 0, 0, 0), title, Enum.Font.PermanentMarker, Color3.fromRGB(255, 255, 255), 18)
+
+    local closeButton = self:CreateButton(windowFrame, UDim2.new(0, 50, 0, 50), UDim2.new(0.9, 0, 0, 0), "X", Enum.Font.PermanentMarker, Color3.fromRGB(255, 0, 0), 18)
+    closeButton.MouseButton1Click:Connect(function()
+        screenGui:Destroy()
+    end)
+
+    return windowFrame
 end
 
 -- Function to initialize the default UI
